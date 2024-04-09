@@ -7,3 +7,4 @@ Alphavit = [
 Paths = "task_1\part.json"
 
 shift = 5
+
