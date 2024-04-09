@@ -1,4 +1,5 @@
 import json
+
 from constant import Alphavit, Paths, shift
 
 
@@ -39,11 +40,8 @@ def ceasar_encrypt(text: str, shift: int) -> str:
     text = text.upper()
     for x in text:
         if x.isalpha():
-            try:
                 ind = Alphavit.index(x)
                 encrypted_text += Alphavit[(ind + shift) % len(Alphavit)]
-            except ValueError:
-                encrypted_text += x
         else:
             encrypted_text += x
     return encrypted_text

@@ -1,4 +1,5 @@
 from constant import Paths2, Alphavit
+
 from search_frequency import read_text, read_json_file
 
 

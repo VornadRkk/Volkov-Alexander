@@ -1,10 +1,11 @@
 import json
-from collections import Counter
+
+from collections import defaultdict
+
 from typing import Dict
+
 from constant import Paths2
 
-
-import json
 
 def read_json_file(file_path: str) -> dict:
     """
@@ -26,7 +27,6 @@ def read_json_file(file_path: str) -> dict:
     except Exception as e:
         print(f"An unexpected error occurred while reading file '{file_path}': {e}.")
         return {}
-
 
 
 def read_text(file: str) -> str:
@@ -51,7 +51,7 @@ def read_text(file: str) -> str:
         return ""
 
 
-def character_frequency_search(text: str) -> Dict[str, int]:
+def character_frequency_search(text: str) -> dict:
     """
     Calculate the frequency.
 
@@ -62,9 +62,12 @@ def character_frequency_search(text: str) -> Dict[str, int]:
         dict: A dictionary containing the frequency of each character in the text.
     """
     try:
-        return dict(Counter(text))
+        frequency = defaultdict(int)
+        for char in text:
+            frequency[char] += 1
+        return frequency
     except Exception as e:
-        print(f"An error occurred while calculating character frequencies: {e}")
+        print(f"An error occurred during the calculation: {e}")
         return {}
 
 
