@@ -1,5 +1,5 @@
-Paths2 = "task_2/part2.json"
-Alphavit = {
+PATHS2 = "task_2/part2.json"
+ALPHAVIT = {
     "М": " ",
     "Р": "З",
     ">": "И",

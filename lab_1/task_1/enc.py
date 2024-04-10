@@ -1,6 +1,6 @@
 import json
 
-from constant import Alphavit, Paths, shift
+from constant import ALPHAVIT, PATHS, SHIFT
 
 
 def read_json_file(file_path: str) -> dict:
@@ -40,8 +40,8 @@ def ceasar_encrypt(text: str, shift: int) -> str:
     text = text.upper()
     for x in text:
         if x.isalpha():
-                ind = Alphavit.index(x)
-                encrypted_text += Alphavit[(ind + shift) % len(Alphavit)]
+                ind = ALPHAVIT.index(x)
+                encrypted_text += ALPHAVIT[(ind + shift) % len(ALPHAVIT)]
         else:
             encrypted_text += x
     return encrypted_text
@@ -51,7 +51,7 @@ def main() -> None:
     """
     A function for working with file paths.
     """
-    paths_data = read_json_file(Paths)
+    paths_data = read_json_file(PATHS)
     if paths_data:
         folder = paths_data.get("folder", "")
         first_text = paths_data.get("first_text", "")
@@ -60,7 +60,7 @@ def main() -> None:
         if folder and first_text and second_text:
             with open(f"{folder}/{first_text}", "r", encoding="utf-8") as file:
                 text = file.read()
-                encrypted_text = ceasar_encrypt(text, shift)
+                encrypted_text = ceasar_encrypt(text, SHIFT)
 
             with open(f"{folder}/{second_text}", "w", encoding="utf-8") as file:
                 file.write(encrypted_text)

@@ -1,4 +1,4 @@
-from constant import Paths2, Alphavit
+from constant import PATHS2, ALPHAVIT
 
 from search_frequency import read_text, read_json_file
 
@@ -33,7 +33,7 @@ def main() -> None:
     Returns: None
     """
     try:
-        json_data = read_json_file(Paths2)
+        json_data = read_json_file(PATHS2)
         if json_data:
             folder = json_data.get("folder", "")
             first_text = json_data.get("first_text", "")
@@ -43,7 +43,7 @@ def main() -> None:
 
             text = read_text(input_file)
             if text:
-                decrypted_text = decrypt_text(text, Alphavit)
+                decrypted_text = decrypt_text(text, ALPHAVIT)
                 with open(output_file, "w", encoding="utf-8") as file:
                     file.write(decrypted_text)
                     print(f"Decrypted text '{output_file}'")
