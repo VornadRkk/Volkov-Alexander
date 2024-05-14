@@ -15,7 +15,7 @@ def read_json_file(file_path: str) -> dict:
         file_path (str): Path to the JSON file.
 
     Returns:
-        dict: Dictionary containing data from the JSON file.
+        dict: Dictionaryy containing data from the JSON file.
     """
     try:
         with open(file_path, "r", encoding="utf-8") as file:
