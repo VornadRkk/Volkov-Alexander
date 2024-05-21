@@ -1,10 +1,11 @@
 import os
-from cryptography.hazmat.primitives import serialization,rsa
+
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from typing import Union
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
+
 
 
 class Key:
@@ -36,7 +37,7 @@ class Key:
         except Exception as e:
             raise RuntimeError(f"Error generating 3DES key: {e}")
     
-    def generate_assymetric_keys(self, key_length: int):
+    def generate_assymetric_keys(self, key_length: int)->bytes:
         """
         Generate RSA key pair with a specified key length.
 
