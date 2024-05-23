@@ -1,8 +1,10 @@
 {
-    "initial_file":"path/to/inital/file.txt",
-    "encrypted_file":"path/to/encrypted/file.txt",
-    "decrypted_file":"path/to/decrypted/file.txt",
+    "initial_file":"text/inital.txt",
+    "encrypted_file":"text/encrypted_text.txt",
+    "decrypted_file":"text/decrypted_text.txt",
     "symmetric_key":"path/to/symmetric/key.txt",
-    "public_key":"path/to/public/key.pem",
-    "secret_key":"path/to/secret/key.pem",
+    "public_key":"key/assymetric_public_key.pem",
+    "secret_key":"key/assymetric_private_key.pem",
+    "encrypeted_symmetric_key":"text/encrypted_symmetric_key,txt",
+    "decrypted_symmetric_key":"text/decrypted_symetric_key.txt"
 }
