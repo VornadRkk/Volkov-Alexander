@@ -114,12 +114,12 @@ class Encrypt:
         """
         try:
             key = Symetric.deserialize_symmetric_key(symetric_path)
-            iv = os.urandom(16)
+            iv = os.urandom(8)
             file_manager = WorkFile()
             text = file_manager.read_text_file(text_path)
             padder = padding.PKCS7(128).padder()
             padded_text = padder.update(text.encode("utf-8")) + padder.finalize()
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+            cipher = Cipher(algorithms.TripleDES(key), modes.CBC(iv))
             encryptor = cipher.encryptor()
             encrypted_text = encryptor.update(padded_text) + encryptor.finalize()
             encrypted_bytes = iv + encrypted_text
@@ -148,9 +148,9 @@ class Encrypt:
             key = Symetric.deserialize_symmetric_key(symmetric_key_path)
             file_manager = WorkFile()
             encrypted_data = file_manager.read_key_bytes(encrypted_text_path)
-            iv = encrypted_data[:16]
-            encrypted_text = encrypted_data[16:]
-            cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+            iv = encrypted_data[:8]
+            encrypted_text = encrypted_data[8:]
+            cipher = Cipher(algorithms.TripleDES(key), modes.CBC(iv))
             decryptor = cipher.decryptor()
             decrypted_text = decryptor.update(encrypted_text) + decryptor.finalize()
             unpadder = padding.PKCS7(128).unpadder()
