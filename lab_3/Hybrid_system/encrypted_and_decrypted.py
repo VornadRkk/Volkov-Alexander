@@ -99,7 +99,7 @@ class Encrypt:
 
     @staticmethod
     def encrypt_text_symmetric_key(
-        text: str, symetric_path: str, encrypted_text_path: str
+        text_path: str, symetric_path: str, encrypted_text_path: str
     ) -> bytes:
         """
         Encrypts text using a symmetric key and returns the encrypted text as bytes.
@@ -115,13 +115,14 @@ class Encrypt:
         try:
             key = Symetric.deserialize_symmetric_key(symetric_path)
             iv = os.urandom(16)
+            file_manager = WorkFile()
+            text = file_manager.read_text_file(text_path)
             padder = padding.PKCS7(128).padder()
             padded_text = padder.update(text.encode("utf-8")) + padder.finalize()
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
             encryptor = cipher.encryptor()
             encrypted_text = encryptor.update(padded_text) + encryptor.finalize()
             encrypted_bytes = iv + encrypted_text
-            file_manager = WorkFile()
             file_manager.write_bytes_to_file(encrypted_text_path, encrypted_bytes)
             print(f"Text encrypted and saved to '{encrypted_text_path}'")
             return encrypted_bytes
@@ -155,7 +156,8 @@ class Encrypt:
             unpadder = padding.PKCS7(128).unpadder()
             unpadded_text = unpadder.update(decrypted_text) + unpadder.finalize()
             decrypted_str = unpadded_text.decode("utf-8")
-            file_manager.write_text_file(decrypted_text_path, decrypted_str)
+            print(decrypted_str)
+            file_manager.write_text_file(decrypted_str,decrypted_text_path)
             print(f"Text decrypted and saved to '{decrypted_text_path}'")
             return decrypted_str
         except Exception as e:
