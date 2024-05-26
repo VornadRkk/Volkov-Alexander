@@ -1,8 +1,26 @@
 import os
 
-class Symetric:
 
-    def generate_symetric_key(self, key_length: int) -> bytes:
+class Symetric:
+    """
+    A class for generating, serializing, and deserializing symmetric keys (3DES).
+
+    Attributes:
+        None
+
+    Methods:
+        generate_symmetric_key(key_length: int) -> bytes:
+            Generate a 3DES key with a specified length.
+
+        serialize_symmetric_key(symmetric_key: bytes, file_path: str) -> None:
+            Serialize a symmetric key to a file.
+
+        deserialize_symmetric_key(file_path: str) -> bytes:
+            Deserialize a symmetric key from a file.
+    """
+
+    @staticmethod
+    def generate_symetric_key(key_length: int) -> bytes:
         """
         Generate a 3DES key with a specified length.
 
@@ -14,7 +32,7 @@ class Symetric:
         """
         if key_length not in [64, 128, 192]:
             raise ValueError("Key length must be 64, 128, or 192 bits.")
-        
+
         try:
             if key_length == 64:
                 return os.urandom(8) * 2
@@ -24,8 +42,9 @@ class Symetric:
                 return os.urandom(24)
         except Exception as e:
             raise RuntimeError(f"Error generating 3DES key: {e}")
-        
-    def serialize_symmetric_key(self, symmetric_key: bytes, file_path: str) -> None:
+
+    @staticmethod
+    def serialize_symmetric_key(symmetric_key: bytes, file_path: str) -> None:
         """
         Serialize a symmetric key to a file.
 
@@ -37,9 +56,12 @@ class Symetric:
             with open(file_path, "wb") as file:
                 file.write(symmetric_key)
         except Exception as e:
-            raise RuntimeError(f"Error serializing symmetric key to file '{file_path}': {e}")
-    
-    def deserialize_symmetric_key(self, file_path: str) -> bytes:
+            raise RuntimeError(
+                f"Error serializing symmetric key to file '{file_path}': {e}"
+            )
+
+    @staticmethod
+    def deserialize_symmetric_key(file_path: str) -> bytes:
         """
         Deserialize a symmetric key from a file.
 
@@ -54,4 +76,6 @@ class Symetric:
                 symmetric_key = file.read()
             return symmetric_key
         except Exception as e:
-            raise RuntimeError(f"Error deserializing symmetric key from file '{file_path}': {e}")
+            raise RuntimeError(
+                f"Error deserializing symmetric key from file '{file_path}': {e}"
+            )

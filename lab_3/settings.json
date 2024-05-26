@@ -2,9 +2,9 @@
     "initial_file":"text/inital.txt",
     "encrypted_file":"text/encrypted_text.txt",
     "decrypted_file":"text/decrypted_text.txt",
-    "symmetric_key":"path/to/symmetric/key.txt",
+    "symmetric_key":"text/symetric_key.txt",
     "public_key":"key/assymetric_public_key.pem",
     "secret_key":"key/assymetric_private_key.pem",
-    "encrypeted_symmetric_key":"text/encrypted_symmetric_key,txt",
+    "encrypted_symmetric_key":"text/encrypted_symmetric_key.txt",
     "decrypted_symmetric_key":"text/decrypted_symetric_key.txt"
 }

@@ -1,12 +1,37 @@
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.serialization import load_pem_public_key, load_pem_private_key
-
+from cryptography.hazmat.primitives.serialization import (
+    load_pem_public_key,
+    load_pem_private_key,
+)
 
 
 class Assymetric:
+    """
+    A class for generating, serializing, and deserializing asymmetric keys (RSA).
 
-    def generate_assymetric_keys(self, key_length: int)->bytes:
+    Attributes:
+        None
+
+    Methods:
+        generate_assymetric_keys(key_length: int) -> Tuple[RSAPrivateKey, RSAPublicKey]:
+            Generate RSA key pair with a specified key length.
+
+        serialize_private_key(key, file_path: str) -> None:
+            Serialize a private key to a file.
+
+        serialize_public_key(key, file_path: str) -> None:
+            Serialize a public key to a file.
+
+        deserialize_asymmetric_public_key(file_path: str) -> rsa.RSAPublicKey:
+            Deserialize an asymmetric public key from a file.
+
+        deserialize_asymmetric_private_key(file_path: str) -> rsa.RSAPrivateKey:
+            Deserialize an asymmetric private key from a file.
+    """
+
+    @staticmethod
+    def generate_assymetric_keys() -> tuple[rsa.RSAPublicKey, rsa.RSAPrivateKey]:
         """
         Generate RSA key pair with a specified key length.
 
@@ -19,15 +44,15 @@ class Assymetric:
         try:
             private_key = rsa.generate_private_key(
                 public_exponent=65537,
-                key_size=key_length,
+                key_size=2048,
             )
             public_key = private_key.public_key()
-            return private_key, public_key
+            return public_key, private_key
         except Exception as e:
             raise RuntimeError(f"Error generating RSA keys: {e}")
-    
-    def serialize_private_key(key, file_path: str) -> None:
-            
+
+    @staticmethod
+    def serialize_private_key(key: rsa.RSAPrivateKey, file_path: str) -> None:
         """
         Serialize a private key to a file.
 
@@ -40,13 +65,16 @@ class Assymetric:
                 serialized_key = key.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.TraditionalOpenSSL,
-                    encryption_algorithm=serialization.NoEncryption()
+                    encryption_algorithm=serialization.NoEncryption(),
                 )
                 file.write(serialized_key)
         except Exception as e:
-            raise RuntimeError(f"Error serializing private key to file '{file_path}': {e}")
+            raise RuntimeError(
+                f"Error serializing private key to file '{file_path}': {e}"
+            )
 
-    def serialize_public_key(key, file_path: str) -> None:
+    @staticmethod
+    def serialize_public_key(key: rsa.RSAPublicKey, file_path: str) -> None:
         """
         Serialize a public key to a file.
 
@@ -58,13 +86,16 @@ class Assymetric:
             with open(file_path, "wb") as file:
                 serialized_key = key.public_bytes(
                     encoding=serialization.Encoding.PEM,
-                    format=serialization.PublicFormat.SubjectPublicKeyInfo
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 )
                 file.write(serialized_key)
         except Exception as e:
-            raise RuntimeError(f"Error serializing public key to file '{file_path}': {e}")
-    
-    def deserialize_asymmetric_public_key(self, file_path: str) -> rsa.RSAPublicKey:
+            raise RuntimeError(
+                f"Error serializing public key to file '{file_path}': {e}"
+            )
+
+    @staticmethod
+    def deserialize_asymmetric_public_key(file_path: str) -> rsa.RSAPublicKey:
         """
         Deserialize an asymmetric key from a file.
 
@@ -76,14 +107,15 @@ class Assymetric:
             RSAPrivateKey or RSAPublicKey: Deserialized key object.
         """
         try:
-            with open(file_path, 'rb') as pem_in:
-                    public_bytes = pem_in.read()
+            with open(file_path, "rb") as pem_in:
+                public_bytes = pem_in.read()
             d_public_key = load_pem_public_key(public_bytes)
             return d_public_key
         except Exception as e:
             raise RuntimeError(f"Error deserializing key from file '{file_path}': {e}")
-    
-    def deserialize_asymmetric_private_key(self, file_path: str) -> rsa.RSAPrivateKey:
+
+    @staticmethod
+    def deserialize_asymmetric_private_key(file_path: str) -> rsa.RSAPrivateKey:
         """
         Deserialize an asymmetric key from a file.
 
@@ -95,10 +127,12 @@ class Assymetric:
             RSAPrivateKey or RSAPublicKey: Deserialized key object.
         """
         try:
-            with open(file_path, 'rb') as pem_in:
-                    private_bytes  = pem_in.read()
-            d_private_key = load_pem_private_key(private_bytes,password=None,)
+            with open(file_path, "rb") as pem_in:
+                private_bytes = pem_in.read()
+            d_private_key = load_pem_private_key(
+                private_bytes,
+                password=None,
+            )
             return d_private_key
         except Exception as e:
             raise RuntimeError(f"Error deserializing key from file '{file_path}': {e}")
-        
