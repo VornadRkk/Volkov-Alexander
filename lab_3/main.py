@@ -1,9 +1,9 @@
 import argparse
 
-from Hybrid_system.encrypted_and_decrypted import Encrypt
 from Hybrid_system.assymetric import Assymetric
 from Hybrid_system.symetric import Symetric
-from work_with_json import WorkFile
+from Hybrid_system.work_with_json import WorkFile
+from Hybrid_system.serialization_and_deserialization import Serealization
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
         "-gen_d",
         "--decrypted_symetric",
         type=str,
-        help="дешифрованиесимметричного ключа",
+        help="дешифрование симметричного ключа",
     )
     group.add_argument(
         "-enc", "--encryption", type=str, help="Запускает режим шифрования"
@@ -36,39 +36,40 @@ def main():
         "-dec", "--decryption", type=str, help="Запускает режим дешифрования"
     )
     parser.add_argument(
-        "work_file", type=str, help="Path to the json file with the settings"
+        "work_file", type=str, help="Путь к json-файлу с настройками"
     )
     args = parser.parse_args()
     work_file = WorkFile.read_json_file(args.work_file)
     match args:
         case args if args.symetric:
-            symmetric_key = symetric.generate_symetric_key(128)
-            symetric.serialize_symmetric_key(symmetric_key,work_file["symmetric_key"])
+            key_length = int(input("Введите желаемую длину ключа (64, 128 или 192): "))
+            symmetric_key = symetric.generate_symmetric_key(key_length)
+            Serealization.serialize_symmetric_key(symmetric_key,work_file["symmetric_key"])
         case args if args.assymetric:
             public_key, private_key = assymetric.generate_assymetric_keys()
-            assymetric.serialize_public_key(public_key, work_file["public_key"])
-            assymetric.serialize_private_key(private_key, work_file["secret_key"])
+            Serealization.serialize_public_key(public_key, work_file["public_key"])
+            Serealization.serialize_private_key(private_key, work_file["secret_key"])
         case args if args.encrypted_symetric:
-            Encrypt.encrypt_symmetric_key_with_public_key(
+            Assymetric.encrypt_symmetric_key_with_public_key(
                 work_file["symmetric_key"],
                 work_file["public_key"],
                 work_file["encrypted_symmetric_key"],
             )
         case args if args.decrypted_symetric:
-            Encrypt.decrypt_symmetric_key(
+            Assymetric.decrypt_symmetric_key(
                 work_file["encrypted_symmetric_key"],
                 work_file["secret_key"],
                 work_file["decrypted_symmetric_key"],
             )
 
         case args if args.encryption:
-            Encrypt.encrypt_text_symmetric_key(
+            Symetric.encrypt_text_symmetric_key(
                 work_file["initial_file"],
                 work_file["symmetric_key"],
                 work_file["encrypted_file"],
             )
         case args if args.decryption:
-            Encrypt.decrypt_text_symmetric(
+            Symetric.decrypt_text_symmetric(
                 work_file["encrypted_file"],
                 work_file["symmetric_key"],
                 work_file["decrypted_file"],

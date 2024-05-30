@@ -1,9 +1,9 @@
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.serialization import (
-    load_pem_public_key,
-    load_pem_private_key,
-)
+from cryptography.hazmat.primitives.asymmetric import padding as crypto_padding
+from cryptography.hazmat.primitives import hashes
+
+from Hybrid_system.serialization_and_deserialization import Serealization
+from Hybrid_system.work_with_json import WorkFile
 
 
 class Assymetric:
@@ -16,18 +16,6 @@ class Assymetric:
     Methods:
         generate_assymetric_keys(key_length: int) -> Tuple[RSAPrivateKey, RSAPublicKey]:
             Generate RSA key pair with a specified key length.
-
-        serialize_private_key(key, file_path: str) -> None:
-            Serialize a private key to a file.
-
-        serialize_public_key(key, file_path: str) -> None:
-            Serialize a public key to a file.
-
-        deserialize_asymmetric_public_key(file_path: str) -> rsa.RSAPublicKey:
-            Deserialize an asymmetric public key from a file.
-
-        deserialize_asymmetric_private_key(file_path: str) -> rsa.RSAPrivateKey:
-            Deserialize an asymmetric private key from a file.
     """
 
     @staticmethod
@@ -52,87 +40,69 @@ class Assymetric:
             raise RuntimeError(f"Error generating RSA keys: {e}")
 
     @staticmethod
-    def serialize_private_key(key: rsa.RSAPrivateKey, file_path: str) -> None:
+    def encrypt_symmetric_key_with_public_key(
+        symmetric_key_path: str, public_key_path: str, encrypted_key_path: str
+    ) -> None:
         """
-        Serialize a private key to a file.
+        Encrypts a symmetric key with a public RSA key and saves the encrypted key to a file.
 
         Args:
-            key: Private key object to be serialized.
-            file_path (str): Path to the file.
-        """
-        try:
-            with open(file_path, "wb") as file:
-                serialized_key = key.private_bytes(
-                    encoding=serialization.Encoding.PEM,
-                    format=serialization.PrivateFormat.TraditionalOpenSSL,
-                    encryption_algorithm=serialization.NoEncryption(),
-                )
-                file.write(serialized_key)
-        except Exception as e:
-            raise RuntimeError(
-                f"Error serializing private key to file '{file_path}': {e}"
-            )
-
-    @staticmethod
-    def serialize_public_key(key: rsa.RSAPublicKey, file_path: str) -> None:
-        """
-        Serialize a public key to a file.
-
-        Args:
-            key: Public key object to be serialized.
-            file_path (str): Path to the file.
-        """
-        try:
-            with open(file_path, "wb") as file:
-                serialized_key = key.public_bytes(
-                    encoding=serialization.Encoding.PEM,
-                    format=serialization.PublicFormat.SubjectPublicKeyInfo,
-                )
-                file.write(serialized_key)
-        except Exception as e:
-            raise RuntimeError(
-                f"Error serializing public key to file '{file_path}': {e}"
-            )
-
-    @staticmethod
-    def deserialize_asymmetric_public_key(file_path: str) -> rsa.RSAPublicKey:
-        """
-        Deserialize an asymmetric key from a file.
-
-        Args:
-            file_path (str): Path to the file containing the serialized key.
-            is_private (bool): Whether the key is private or public.
+            symmetric_key_path (str): Path to the file containing the symmetric key.
+            public_key_path (str): Path to the file containing the RSA public key.
+            encrypted_key_path (str): Path to save the encrypted symmetric key.
 
         Returns:
-            RSAPrivateKey or RSAPublicKey: Deserialized key object.
+            None
         """
         try:
-            with open(file_path, "rb") as pem_in:
-                public_bytes = pem_in.read()
-            d_public_key = load_pem_public_key(public_bytes)
-            return d_public_key
+            symmetric_key = Serealization.deserialize_symmetric_key(symmetric_key_path)
+            public_key = Serealization.deserialize_asymmetric_public_key(
+                public_key_path
+            )
+            encrypted_key = public_key.encrypt(
+                symmetric_key,
+                crypto_padding.OAEP(
+                    mgf=crypto_padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None,
+                ),
+            )
+            file_manager = WorkFile()
+            file_manager.write_bytes_to_file(encrypted_key_path, encrypted_key)
+            print(f"Symmetric key encrypted and saved to '{encrypted_key_path}'")
         except Exception as e:
-            raise RuntimeError(f"Error deserializing key from file '{file_path}': {e}")
+            raise RuntimeError(f"Failed to encrypt symmetric key: {e}")
 
     @staticmethod
-    def deserialize_asymmetric_private_key(file_path: str) -> rsa.RSAPrivateKey:
+    def decrypt_symmetric_key(
+        encrypted_key_path: str, private_key_path: str, decrypted_symmetric_key: str
+    ) -> bytes:
         """
-        Deserialize an asymmetric key from a file.
+        Decrypt a symmetric key using a private RSA key.
 
         Args:
-            file_path (str): Path to the file containing the serialized key.
-            is_private (bool): Whether the key is private or public.
+            private_key_path (str): Path to the file containing the private RSA key.
+            encrypted_symmetric_key (bytes): Encrypted symmetric key.
 
         Returns:
-            RSAPrivateKey or RSAPublicKey: Deserialized key object.
+            bytes: Decrypted symmetric key.
         """
         try:
-            with open(file_path, "rb") as pem_in:
-                private_bytes = pem_in.read()
-            d_private_key = load_pem_private_key(
-                private_bytes,
-                password=None,
+            symmetric_key = Serealization.deserialize_symmetric_key(encrypted_key_path)
+            private_key = Serealization.deserialize_asymmetric_private_key(
+                private_key_path
             )
-            return d_private_key
+            decrypted_key = private_key.decrypt(
+                symmetric_key,
+                crypto_padding.OAEP(
+                    mgf=crypto_padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None,
+                ),
+            )
+            file_manager = WorkFile()
+            file_manager.write_bytes_to_file(decrypted_symmetric_key, decrypted_key)
+            print(f"Symmetric key decrypted and saved to '{decrypted_symmetric_key}'")
+            return decrypted_key
         except Exception as e:
-            raise RuntimeError(f"Error deserializing key from file '{file_path}': {e}")
+            raise RuntimeError(f"Error decrypting symmetric key: {e}")
