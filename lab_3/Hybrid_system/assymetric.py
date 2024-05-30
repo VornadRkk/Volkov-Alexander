@@ -16,6 +16,15 @@ class Assymetric:
     Methods:
         generate_assymetric_keys(key_length: int) -> Tuple[RSAPrivateKey, RSAPublicKey]:
             Generate RSA key pair with a specified key length.
+        encrypt_symmetric_key_with_public_key(
+            symmetric_key_path: str, public_key_path: str, encrypted_key_path: str
+        ) -> None:
+            Encrypts a symmetric key with a public RSA key and saves the encrypted key to a file.
+
+        decrypt_symmetric_key(
+            encrypted_key_path: str, private_key_path: str, decrypted_symmetric_key: str
+        ) -> bytes:
+            Decrypts a symmetric key using a private RSA key and saves the decrypted key to a file.
     """
 
     @staticmethod
